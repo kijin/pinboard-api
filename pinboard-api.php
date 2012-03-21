@@ -36,6 +36,8 @@ class PinboardAPI
     const RECENT_COUNT_MAX = 100;
     const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client for PHP; http://github.com/kijin/pinboard-api)';
     
+    public static $_instance_hashes = array();
+    protected $_instance_hash;
     protected $_user;
     protected $_pass;
     protected $_connection_timeout;
@@ -51,6 +53,15 @@ class PinboardAPI
         $this->_pass = $pass;
         $this->_connection_timeout = $connection_timeout;
         $this->_request_timeout = $request_timeout;
+        $this->_instance_hash = substr(md5($user . ':' . $pass), 0, 8);
+        self::$_instance_hashes[$this->_instance_hash] = $this;
+    }
+    
+    // Destructor.
+    
+    public function __destruct()
+    {
+        unset(self::$_instance_hashes[$this->_instance_hash]);
     }
     
     // Enable logging to a user-specified function.
@@ -388,6 +399,7 @@ class PinboardAPI
         foreach ($xml->post as $entry)
         {
             $bookmark = new PinboardBookmark;
+            $bookmark->_api_instance_hash = $this->_instance_hash;
             $bookmark->url = (string)$entry['href'];
             $bookmark->title = (string)$entry['description'];
             if (isset($entry['extended'])) $bookmark->description = (string)$entry['extended'];
@@ -435,16 +447,66 @@ class PinboardAPI
 
 class PinboardBookmark
 {
+    // This property may be public, but it is not to be touched.
+    
+    public $_api_instance_hash;
+    
+    // These properties are free to modify.
+    
     public $url;
     public $title;
     public $description;
     public $timestamp;
     public $tags = array();
-    public $hash;
-    public $meta;
-    public $others;
     public $is_public;
     public $is_unread;
+    
+    // These properties will not be saved.
+    
+    public $others;
+    public $hash;
+    public $meta;
+    
+    // Save shortcut.
+    
+    public function save($api_instance = null)
+    {
+        $save_to = $this->_find_api_instance($api_instance);
+        return $save_to->save($this);
+    }
+    
+    // Delete shortcut.
+    
+    public function delete($api_instance = null)
+    {
+        $save_to = $this->_find_api_instance($api_instance);
+        return $save_to->delete($this);
+    }
+    
+    // Magically find out which API instance to save to, if there are more than one.
+    
+    protected function _find_api_instance($hint)
+    {
+        if ($hint instanceof PinboardAPI)
+        {
+            return $hint;
+        }
+        elseif (count(PinboardAPI::$_instance_hashes) == 1)
+        {
+            $instances = array_values(PinboardAPI::$_instance_hashes);
+            return $instances[0];
+        }
+        elseif (!is_null($this->_api_instance_hash)
+            && array_key_exists($this->_api_instance_hash, PinboardAPI::$_instance_hashes)
+            && PinboardAPI::$_instance_hashes[$this->_api_instance_hash] instanceof PinboardAPI)
+        {
+            return PinboardAPI::$_instance_hashes[$this->_api_instance_hash];
+        }
+        else
+        {
+            throw new PinboardException('Multiple instance of PinboardAPI are running. Please specify which instance to save to!');
+        }
+    }
 }
 
 // Date class, used in get_dates().
