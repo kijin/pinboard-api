@@ -49,6 +49,13 @@ Here's some sample code:
 Classes and Methods
 -------------------
 
+The Pinboard API Client is liberal in what it accepts but conservative in what it produces.
+Timestamps and tags are accepted in various formats,
+and a full `PinboardBookmark` object can often be replaced with just a URL.
+However, timestamps returned by the API Client will always be Unix timestamps
+(except in the case of `get_dates()` where you'll get dates in the `YYYY-MM-DD` format),
+and tags will always be strings in an array.
+
 
 ### PinboardAPI->__construct()
 
