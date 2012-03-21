@@ -34,6 +34,7 @@ class PinboardAPI
     const API_BASE_URL = 'https://api.pinboard.in/v1/';
     const ALLOWED_URL_SCHEMES_REGEX = '/^(?:https?|javascript|mailto|ftp|file):/i';
     const RECENT_COUNT_MAX = 100;
+    const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client for PHP; http://github.com/kijin/pinboard-api)';
     
     protected $_user;
     protected $_pass;
@@ -314,6 +315,7 @@ class PinboardAPI
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->_connection_timeout);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->_request_timeout);
+        curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
