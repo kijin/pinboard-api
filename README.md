@@ -383,16 +383,46 @@ The following methods are available:
   - **delete()** : delete this bookmark.
 
 You can use these methods instead of `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` to save or delete individual bookmarks.
-This is also more consistent with common idioms of object-oriented programming.
+This may be more intuitive to developers who are used to common ORM idioms, which this library tries to mimic.
+
+For example, instead of:
+
+    $pinboard->save($bookmark);
+
+You can simply do:
+
+    $bookmark->save();
 
 If only one instance of `PinboardAPI` exists in the current script (which will usually be the case),
 the API Client automatically uses it to save or delete all bookmarks, even newly created ones.
-On the other hand, if there are multiple instances using different login credentials (quite uncommon),
-`PinboardException` will be thrown because the methods won't know which instance to use.
-In that case, you must call `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` instead,
-or pass the appropriate `PinboardAPI` instance to `save()` and `delete()` as an argument.
-However, even when using multiple instances, bookmarks that were retrieved using one of the `get_*` or `search_*` methods
-will remember which instance they came from, and therefore `save()` and `delete()` will work without any problem.
+So there is no need for `PinboardBookmark` instances to interact explicitly with `PinboardAPI` instances.
+
+However, if you create multiple instances of `PinboardAPI` using different login credentials
+(perhaps because you want to copy or move bookmarks from one Pinboard account to another),
+`save()` and `delete()` methods will throw `PinboardException` because they don't know which instance to use.
+In that case, you should call `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` instead,
+or pass the appropriate `PinboardAPI` instance as an argument to `save()` and `delete()`.
+Both methods take one optional argument, which should be a `PinboardAPI` instance.
+
+The following example copies bookmarks from one Pinboard account to another:
+
+    $pinboard1 = new PinboardAPI('user1', 'pass1');
+    $pinboard2 = new PinboardAPI('user2', 'pass2');
+    $bookmarks = $pinboard1->search_by_tag('tag');
+    foreach ($bookmarks as $bookmark) {
+        $bookmark->save($pinboard2);
+    }
+
+Even when using multiple instances, bookmarks that were retrieved using one of the `get_*` or `search_*` methods
+will remember which instance they came from, and therefore `save()` and `delete()` will work without any problem,
+as shown in the following example:
+
+    $pinboard1 = new PinboardAPI('user1', 'pass1');
+    $pinboard2 = new PinboardAPI('user2', 'pass2');
+    $bookmarks = $pinboard1->search_by_url('http://awesome-website.com/');
+    $bookmark = $bookmarks[0];
+    $bookmark->description = 'New description';
+    $bookmark->save();  // Automatically saved to $pinboard1
 
 
 PinboardDate class
