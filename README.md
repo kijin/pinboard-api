@@ -10,7 +10,7 @@ However, this library has not been tested extensively, so caution is advised whe
 This library requires PHP 5 with the cURL extension. SSL support must be enabled.
 This library also requires SimpleXML, which is enabled by default in most PHP 5 installations.
 
-Pinboard API Client for PHP is released under the [MIT License](http://opensource.org/licenses/MIT).
+This library is released under the [MIT License](http://opensource.org/licenses/MIT).
 The author is not affiliated with Pinboard in any way except as a customer.
 
 
@@ -362,7 +362,7 @@ This class is used with `save()` and several other methods that take bookmarks a
 Its use is required when calling `save()`, but in most other cases it can be substituted with just a URL.
 The API Client will also return instances of this class whenever it fetches bookmarks from Pinboard.
 
-Public Properties:
+The following properties can be adjusted freely:
 
   - _required_ **url** : the URL of the bookmark.
   - _required_ **title** : the title of the bookmark.
@@ -372,7 +372,7 @@ Public Properties:
   - _optional_ **is_public** : `true` or `false`. Default is determined by your Pinboard account settings.
   - _optional_ **is_unread** : `true` or `false`. Default is `false`.
 
-The following properties are also public, but they will not be saved when you call `save()`.
+The following properties are also public, but they will not be saved when you call `save()`:
 
   - **hash** : an MD5 hash of the URL that Pinboard uses to uniquely identify bookmarks.
   - **meta** : another hash that can be used to detect when a bookmark is changed.
@@ -383,7 +383,7 @@ The following methods are available:
   - **save()** : save this bookmark.
   - **delete()** : delete this bookmark.
 
-You can use these methods instead of `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` to save or delete individual bookmarks.
+You can use these methods instead of `PinboardAPI->save($bookmark)` and `PinboardAPI->delete($bookmark)` to save or delete individual bookmarks.
 This may be more intuitive to developers who are used to common ORM idioms, which this library tries to mimic.
 
 For example, instead of:
@@ -400,8 +400,8 @@ So there is no need for `PinboardBookmark` instances to interact explicitly with
 
 However, if you create multiple instances of `PinboardAPI` using different login credentials
 (perhaps because you want to copy or move bookmarks from one Pinboard account to another),
-`save()` and `delete()` methods will throw `PinboardException` because they don't know which instance to use.
-In that case, you should call `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` instead,
+these methods will throw `PinboardException` because they don't know which instance to use.
+In that case, you should use the equivalent methods on `PinboardAPI` instances instead,
 or pass the appropriate `PinboardAPI` instance as an argument to `save()` and `delete()`.
 Both methods take one optional argument, which should be a `PinboardAPI` instance.
 
@@ -411,7 +411,7 @@ The following example copies bookmarks from one Pinboard account to another:
     $pinboard2 = new PinboardAPI('user2', 'pass2');
     $bookmarks = $pinboard1->search_by_tag('tag');
     foreach ($bookmarks as $bookmark) {
-        $bookmark->save($pinboard2);
+        $bookmark->save($pinboard2);  // Equivalent to $pinboard2->save($bookmark);
         sleep(3);  // Comply with Pinboard's rate limiting policy
     }
 
