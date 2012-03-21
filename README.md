@@ -7,7 +7,8 @@ All of the XML juggling is abstracted away, so that you can work with native PHP
 Currently, all features of API v1 are supported.
 However, this library has not been tested extensively, so caution is advised when using it on important data.
 
-This library requires PHP 5 with the cURL extension. SimpleXML must also be enabled.
+This library requires PHP 5 with the cURL extension. SSL support must be enabled.
+This library also requires SimpleXML, which is enabled by default in most PHP 5 installations.
 
 This library is released under the liberal [MIT License](http://opensource.org/licenses/MIT).
 
@@ -23,21 +24,25 @@ Here's some sample code:
     
     // Create a new bookmark.
     $bookmark = new PinboardBookmark;
-    $bookmark->url = 'https://pinboard.in';
+    $bookmark->url = 'https://pinboard.in/';
     $bookmark->title = 'Pinboard';
     $bookmark->description = 'An awesome bookmarking service';
     $bookmark->tags = array('awesome', 'bookmarking');
     $pinboard->save($bookmark);
     
     // Edit a bookmark.
-    $bookmark = $pinboard->search_by_url('https://delicious.com/');
-    $bookmark->description = 'Not so tasty anymore';
-    $pinboard->save($bookmark);
+    $bookmarks = $pinboard->search_by_url('https://delicious.com/');
+    if (count($bookmarks))
+    {
+        $bookmark = $bookmark[0];
+        $bookmark->description = 'Not so tasty anymore';
+        $pinboard->save($bookmark);
+    }
     
     // Get a list of your tags.
     $tags = $pinboard->get_tags();
     foreach ($tags as $tag) {
-        echo "{$tag->count} bookmarks are tagged '{$tag}'.\n";
+        echo "Tag '{$tag}' has {$tag->count} bookmarks.\n";
     }
 
     
@@ -49,10 +54,10 @@ Classes and Methods
 
 **Arguments :**
 
-    - _required_ **$user** : your Pinboard username.
-    - _required_ **$pass** : your Pinboard password.
-    - _optional_ **$connection_timeout** : connection timeout in seconds. Default is 10.
-    - _optional_ **$request_timeout** : request timeout in seconds. Default is 30.
+  - _required_ **$user** : your Pinboard username.
+  - _required_ **$pass** : your Pinboard password.
+  - _optional_ **$connection_timeout** : connection timeout in seconds. Default is 10.
+  - _optional_ **$request_timeout** : request timeout in seconds. Default is 30.
 
     
 ### PinboardAPI->enable_logging()
@@ -62,7 +67,7 @@ This can be useful for debugging.
 
 **Arguments :**
 
-    - _required_ **$func** : a callable that takes one argument.
+  - _required_ **$func** : a callable that takes one argument.
 
 The callable can be either a function name, a method name, or a closure.
 It will be passed the remote URL whenever the API Client makes a request to Pinboard.
@@ -89,8 +94,8 @@ Note that Pinboard may impose rate limiting on this method.
 
 **Arguments :**
 
-    - _optional_ **$count** : integer, how many bookmarks to return. Default is 15. Maximum is 100.
-    - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _optional_ **$count** : integer, how many bookmarks to return. Default is 15. Maximum is 100.
+  - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -106,11 +111,11 @@ If you would like to skip any arguments, use `null` in place of the missing argu
 
 **Arguments :**
 
-    - _optional_ **$count** : integer, how many bookmarks to return. Default is all.
-    - _optional_ **$offset** : integer, when used with `$count`, how many bookmarks to skip.
-    - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
-    - _optional_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
-    - _optional_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
+  - _optional_ **$count** : integer, how many bookmarks to return. Default is all.
+  - _optional_ **$offset** : integer, when used with `$count`, how many bookmarks to skip.
+  - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _optional_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
+  - _optional_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -127,9 +132,9 @@ If you would like to skip any arguments, use `null` in place of the missing argu
 
 **Arguments :**
 
-    - _optional_ **$url** : the exact URL of the bookmark to look for.
-    - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
-    - _optional_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
+  - _optional_ **$url** : the exact URL of the bookmark to look for.
+  - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _optional_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -141,7 +146,7 @@ Note that this method will return an array even if there is only one bookmark.
 
 **Arguments :**
 
-    - _required_ **$url** : the exact URL of the bookmark to look for.
+  - _required_ **$url** : the exact URL of the bookmark to look for.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -152,7 +157,7 @@ A shortcut to `get_all()`.
 
 **Arguments :**
 
-    - _required_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _required_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -163,7 +168,7 @@ A shortcut to `get()`.
 
 **Arguments :**
 
-    - _required_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
+  - _required_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -174,8 +179,8 @@ A shortcut to `get_all()`.
 
 **Arguments :**
 
-    - _required_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
-    - _required_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
+  - _required_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
+  - _required_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
 
 **Returns :** an array of `PinboardBookmark` objects.
 
@@ -188,8 +193,8 @@ Use this method to add a new bookmark or edit an existing bookmark.
 
 **Arguments :**
 
-    - _required_ **$bookmark** : a `PinboardBookmark` object to save.
-    - _optional_ **$replace** : set to `false` if you don't want to overwrite an existing bookmark with the same URL. Default is `true`.
+  - _required_ **$bookmark** : a `PinboardBookmark` object to save.
+  - _optional_ **$replace** : set to `false` if you don't want to overwrite an existing bookmark with the same URL. Default is `true`.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
@@ -202,7 +207,7 @@ Use this method to delete a bookmark.
 
 **Arguments :**
 
-    - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
+  - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
@@ -216,7 +221,7 @@ Optionally filtered by up to three tags.
 
 **Arguments :**
 
-    - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
 **Returns :** an array of `PinboardDate` objects. (These objects behave like strings.)
 
@@ -229,7 +234,7 @@ Use this method to get tag suggestions for a bookmark or URL.
 
 **Arguments :**
 
-    - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
+  - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
 
 **Returns :** an associative array with two keys, `popular` and `recommended`, each of which contains an array of strings.
 
@@ -253,8 +258,8 @@ Use this method to rename one tag to another.
 
 **Arguments :**
 
-    - _required_ **$old** : the old name, as a string.
-    - _required_ **$new** : the new name, as a string.
+  - _required_ **$old** : the old name, as a string.
+  - _required_ **$new** : the new name, as a string.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
@@ -267,7 +272,7 @@ Use this method to delete a tag. Bookmarks will not be deleted.
 
 **Arguments :**
 
-    - _required_ **$tag** : the tag to delete, as a string.
+  - _required_ **$tag** : the tag to delete, as a string.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
@@ -316,19 +321,19 @@ The API Client will also return instances of this class whenever it fetches book
 
 **Public Properties:**
 
-    - _required_ **url** : the URL of the bookmark.
-    - _required_ **title** : the title of the bookmark.
-    - _optional_ **description** : any additional description.
-    - _optional_ **timestamp** : a Unix timestamp, or any string that PHP can parse into a timestamp.
-    - _optional_ **tags** : an array of 1-3 tags, or a string with spaces between tags.
-    - _optional_ **is_public** : `true` or `false`. Default is determined by your Pinboard account settings.
-    - _optional_ **is_unread** : `true` or `false`. Default is `false`.
+  - _required_ **url** : the URL of the bookmark.
+  - _required_ **title** : the title of the bookmark.
+  - _optional_ **description** : any additional description.
+  - _optional_ **timestamp** : a Unix timestamp, or any string that PHP can parse into a timestamp.
+  - _optional_ **tags** : an array of 1-3 tags, or a string with spaces between tags.
+  - _optional_ **is_public** : `true` or `false`. Default is determined by your Pinboard account settings.
+  - _optional_ **is_unread** : `true` or `false`. Default is `false`.
 
 The following properties are also public, but they will not be saved when you call `save()`.
 
-    - **hash** : an MD5 hash of the URL that Pinboard uses to uniquely identify bookmarks.
-    - **meta** : another hash that can be used to detect when a bookmark is changed.
-    - **others** : the number of other Pinboard users who have bookmarked the same URL.
+  - **hash** : an MD5 hash of the URL that Pinboard uses to uniquely identify bookmarks.
+  - **meta** : another hash that can be used to detect when a bookmark is changed.
+  - **others** : the number of other Pinboard users who have bookmarked the same URL.
 
 
 ### PinboardDate
@@ -365,10 +370,10 @@ Examples:
 
 The Pinboard API Client defines the following exceptions:
 
-    - `PinboardException` (extends `Exception`)
-    - `PinboardException_ConnectionError` (extends `PinboardException`)
-    - `PinboardException_TooManyRequests` (extends `PinboardException`)
-    - `PinboardException_InvalidResponse` (extends `PinboardException`)
+  - `PinboardException` (extends `Exception`)
+  - `PinboardException_ConnectionError` (extends `PinboardException`)
+  - `PinboardException_TooManyRequests` (extends `PinboardException`)
+  - `PinboardException_InvalidResponse` (extends `PinboardException`)
 
 `PinboardException_ConnectionError` is thrown if there is a problem connecting to Pinboard's servers.
 This is most likely due to some sort of outage.
