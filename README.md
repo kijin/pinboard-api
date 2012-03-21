@@ -65,7 +65,7 @@ and tags will always be strings in an array.
 PinboardAPI->__construct()
 --------------------------
 
-**Arguments :**
+Arguments:
 
   - _required_ **$user** : your Pinboard username.
   - _required_ **$pass** : your Pinboard password.
@@ -79,14 +79,14 @@ PinboardAPI->enable_logging()
 Use this method if you would like to get notified every time the API Client makes a remote request.
 This can be useful for debugging.
 
-**Arguments :**
+Arguments:
 
   - _required_ **$func** : a callable that takes one argument.
 
 The callable can be either a function name, a method name, or a closure.
 It will be passed the remote URL whenever the API Client makes a request to Pinboard.
 
-The following example will print "https://api.pinboard.in/v1/posts/update" to the console.
+The following example will print `https://api.pinboard.in/v1/posts/update` to the console.
 
     $pinboard = new PinboardAPI('username', 'password');
     $pinboard->enable_logging(function($str) { echo "$str\n"; });
@@ -98,11 +98,11 @@ PinboardAPI->get_updated_time()
 Use this method to find out when you last made changes to your bookmarks.
 This can help reduce unnecessary calls to expensive methods such as `get_all()`.
 
-**API Method Call :** `posts/update`
+API Method Call: `posts/update`
 
-**Arguments :** none.
+Arguments: none.
 
-**Returns :** integer (Unix timestamp).
+Returns: integer (Unix timestamp).
 
 
 PinboardAPI->get_recent()
@@ -111,14 +111,14 @@ PinboardAPI->get_recent()
 Use this method to grab your most recent bookmarks, optionally filtered by up to three tags.
 Note that Pinboard may impose rate limiting on this method.
 
-**API Method Call :** `posts/recent`
+API Method Call: `posts/recent`
 
-**Arguments :**
+Arguments:
 
   - _optional_ **$count** : integer, how many bookmarks to return. Default is 15. Maximum is 100.
   - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->get_all()
@@ -129,9 +129,9 @@ Note that Pinboard may impose rate limiting on this method.
 
 If you would like to skip any arguments, use `null` in place of the missing argument.
 
-**API Method Call :** `posts/all`
+API Method Call: `posts/all`
 
-**Arguments :**
+Arguments:
 
   - _optional_ **$count** : integer, how many bookmarks to return. Default is all.
   - _optional_ **$offset** : integer, when used with `$count`, how many bookmarks to skip.
@@ -139,7 +139,7 @@ If you would like to skip any arguments, use `null` in place of the missing argu
   - _optional_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
   - _optional_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->get()
@@ -151,15 +151,15 @@ for details on how this method behaves when the date argument is absent.
 
 If you would like to skip any arguments, use `null` in place of the missing argument.
 
-**API Method Call :** `posts/get`
+API Method Call: `posts/get`
 
-**Arguments :**
+Arguments:
 
   - _optional_ **$url** : the exact URL of the bookmark to look for.
   - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
   - _optional_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->search_by_url()
@@ -168,11 +168,11 @@ PinboardAPI->search_by_url()
 A shortcut to `get()`.
 Note that this method will return an array even if there is only one bookmark.
 
-**Arguments :**
+Arguments:
 
   - _required_ **$url** : the exact URL of the bookmark to look for.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->search_by_tag()
@@ -180,11 +180,11 @@ PinboardAPI->search_by_tag()
 
 A shortcut to `get_all()`.
 
-**Arguments :**
+Arguments:
 
   - _required_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->search_by_date()
@@ -192,11 +192,11 @@ PinboardAPI->search_by_date()
 
 A shortcut to `get()`.
 
-**Arguments :**
+Arguments:
 
   - _required_ **$date** : a Unix timestamp, any string that PHP can parse into a timestamp, or a date in the format `YYYY-MM-DD`.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->search_by_interval()
@@ -204,12 +204,12 @@ PinboardAPI->search_by_interval()
 
 A shortcut to `get_all()`.
 
-**Arguments :**
+Arguments:
 
   - _required_ **$from** : a Unix timestamp, or any string that PHP can parse into a timestamp.
   - _required_ **$to** : a Unix timestamp, or any string that PHP can parse into a timestamp.
 
-**Returns :** an array of `PinboardBookmark` objects.
+Returns: an array of `PinboardBookmark` objects.
 
 
 PinboardAPI->save()
@@ -217,14 +217,14 @@ PinboardAPI->save()
 
 Use this method to add a new bookmark or edit an existing bookmark.
 
-**API Method Call :** `posts/add`
+API Method Call: `posts/add`
 
-**Arguments :**
+Arguments:
 
   - _required_ **$bookmark** : a `PinboardBookmark` object to save.
   - _optional_ **$replace** : set to `false` if you don't want to overwrite an existing bookmark with the same URL. Default is `true`.
 
-**Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
+Returns: `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 When not using `$replace`, it may be more intuitive to use `PinboardBookmark->save()` instead. See below for more information on using this alternative syntax.
 
@@ -234,13 +234,13 @@ PinboardAPI->delete()
 
 Use this method to delete a bookmark.
 
-**API Method Call :** `posts/delete`
+API Method Call: `posts/delete`
 
-**Arguments :**
+Arguments:
 
   - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
 
-**Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
+Returns: `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 Note that it may be more intuitive to use `PinboardBookmark->delete()` instead. See below for more information on using this alternative syntax.
 
@@ -251,13 +251,13 @@ PinboardAPI->get_dates()
 Use this method to get a list of dates on which you added bookmarks, with the number of bookmarks for each day.
 Optionally filtered by up to three tags.
 
-**API Method Call :** `posts/dates`
+API Method Call: `posts/dates`
 
-**Arguments :**
+Arguments:
 
   - _optional_ **$tags** : an array of 1-3 tags, or a string with spaces between tags.
 
-**Returns :** an array of `PinboardDate` objects. (These objects behave like strings.)
+Returns: an array of `PinboardDate` objects. (These objects behave like strings.)
 
 
 PinboardAPI->get_suggested_tags()
@@ -265,13 +265,13 @@ PinboardAPI->get_suggested_tags()
 
 Use this method to get tag suggestions for a bookmark or URL.
 
-**API Method Call :** `posts/suggest`
+API Method Call: `posts/suggest`
 
-**Arguments :**
+Arguments:
 
   - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
 
-**Returns :** an associative array with two keys, `popular` and `recommended`, each of which contains an array of strings.
+Returns: an associative array with two keys, `popular` and `recommended`, each of which contains an array of strings.
 
 
 PinboardAPI->get_tags()
@@ -279,11 +279,11 @@ PinboardAPI->get_tags()
 
 Use this method to get a list of all your tags, with the number of bookmarks for each tag.
 
-**API Method Call :** `tags/get`
+API Method Call: `tags/get`
 
-**Arguments :** none.
+Arguments: none.
 
-**Returns :** an array of `PinboardTag` objects. (These objects behave like strings.)
+Returns: an array of `PinboardTag` objects. (These objects behave like strings.)
 
 
 PinboardAPI->rename_tag()
@@ -291,14 +291,14 @@ PinboardAPI->rename_tag()
 
 Use this method to rename one tag to another.
 
-**API Method Call :** `tags/rename`
+API Method Call: `tags/rename`
 
-**Arguments :**
+Arguments:
 
   - _required_ **$old** : the old name, as a string.
   - _required_ **$new** : the new name, as a string.
 
-**Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
+Returns: `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
 PinboardAPI->delete_tag()
@@ -306,13 +306,13 @@ PinboardAPI->delete_tag()
 
 Use this method to delete a tag. Bookmarks will not be deleted.
 
-**API Method Call :** `tags/delete`
+API Method Call: `tags/delete`
 
-**Arguments :**
+Arguments:
 
   - _required_ **$tag** : the tag to delete, as a string.
 
-**Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
+Returns: `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
 PinboardAPI->get_rss_token()
@@ -320,11 +320,11 @@ PinboardAPI->get_rss_token()
 
 Use this method to get your secret RSS token.
 
-**API Method Call :** `user/secret`
+API Method Call: `user/secret`
 
-**Arguments :** none.
+Arguments: none.
 
-**Returns :** a string containing your RSS token.
+Returns: a string containing your RSS token.
 
 
 PinboardAPI->get_last_status()
@@ -334,9 +334,9 @@ Use this method to retrieve any error message for one of the following methods: 
 If the last operation did not fail, this method will return "done".
 If no applicable operation has been performed, this method will return `null`.
 
-**Arguments :** none.
+Arguments: none.
 
-**Returns :** a string containing the last error message, or `null`.
+Returns: a string containing the last error message, or `null`.
 
 
 PinboardAPI->dump()
@@ -347,11 +347,11 @@ The dump will be produced in an XML format that can be easily imported into Pinb
 or any other online bookmarking service that supports importing bookmarks in the Delicious format.
 Note that Pinboard may impose rate limiting on this method.
 
-**API Method Call :** `posts/all`
+API Method Call: `posts/all`
 
-**Arguments :** none.
+Arguments: none.
 
-**Returns :** a string containing the XML dump.
+Returns: a string containing the XML dump.
 
 
 PinboardBookmark class
@@ -361,7 +361,7 @@ This class is used with `save()` and several other methods that take bookmarks a
 Its use is required when calling `save()`, but in most other cases it can be substituted with just a URL.
 The API Client will also return instances of this class whenever it fetches bookmarks from Pinboard.
 
-**Public Properties:**
+Public Properties:
 
   - _required_ **url** : the URL of the bookmark.
   - _required_ **title** : the title of the bookmark.
