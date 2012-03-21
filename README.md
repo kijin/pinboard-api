@@ -1,6 +1,6 @@
 
 Pinboard API Client in PHP
---------------------------
+==========================
 
 This library implements a client for [Pinboard API](https://pinboard.in/api/).
 All of the XML juggling is abstracted away, so that you can work with native PHP arrays and objects.
@@ -13,16 +13,15 @@ This library also requires SimpleXML, which is enabled by default in most PHP 5 
 This library is released under the liberal [MIT License](http://opensource.org/licenses/MIT).
 
 
-Getting Started
----------------
+### Getting Started
 
-Here's some sample code:
-    
-    // Bootstrap.
+Bootstrap:
+
     include 'pinboard-api.php';
     $pinboard = new PinboardAPI('username', 'password');
-    
-    // Create a new bookmark.
+
+Create a new bookmark:
+
     $bookmark = new PinboardBookmark;
     $bookmark->url = 'https://pinboard.in/';
     $bookmark->title = 'Pinboard';
@@ -30,24 +29,26 @@ Here's some sample code:
     $bookmark->tags = array('awesome', 'bookmarking');
     $pinboard->save($bookmark);
     
-    // Edit a bookmark.
+Edit an existing bookmark:
+
     $bookmarks = $pinboard->search_by_url('https://delicious.com/');
-    if (count($bookmarks))
-    {
+    if (count($bookmarks)) {
         $bookmark = $bookmark[0];
         $bookmark->description = 'Not so tasty anymore';
+        $bookmark->tags[] = 'not-awesome'
         $pinboard->save($bookmark);
     }
-    
-    // Get a list of your tags.
+
+Get a list of your tags:
+
     $tags = $pinboard->get_tags();
     foreach ($tags as $tag) {
         echo "Tag '{$tag}' has {$tag->count} bookmarks.\n";
     }
 
-    
+
 Classes and Methods
--------------------
+===================
 
 The Pinboard API Client is liberal in what it accepts but conservative in what it produces.
 Timestamps and tags are accepted in various formats,
@@ -57,7 +58,8 @@ However, timestamps returned by the API Client will always be Unix timestamps
 and tags will always be strings in an array.
 
 
-### PinboardAPI->__construct()
+PinboardAPI->__construct()
+--------------------------
 
 **Arguments :**
 
@@ -67,7 +69,8 @@ and tags will always be strings in an array.
   - _optional_ **$request_timeout** : request timeout in seconds. Default is 30.
 
     
-### PinboardAPI->enable_logging()
+PinboardAPI->enable_logging()
+-----------------------------
 
 Use this method if you would like to get notified every time the API Client makes a remote request.
 This can be useful for debugging.
@@ -80,7 +83,8 @@ The callable can be either a function name, a method name, or a closure.
 It will be passed the remote URL whenever the API Client makes a request to Pinboard.
 
 
-### PinboardAPI->get_updated_time()
+PinboardAPI->get_updated_time()
+-------------------------------
 
 Use this method to find out when you last made changes to your bookmarks.
 This can help reduce unnecessary calls to expensive methods such as `get_all()`.
@@ -92,7 +96,8 @@ This can help reduce unnecessary calls to expensive methods such as `get_all()`.
 **Returns :** integer (Unix timestamp).
 
 
-### PinboardAPI->get_recent()
+PinboardAPI->get_recent()
+-------------------------
 
 Use this method to grab your most recent bookmarks, optionally filtered by up to three tags.
 Note that Pinboard may impose rate limiting on this method.
@@ -107,7 +112,8 @@ Note that Pinboard may impose rate limiting on this method.
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->get_all()
+PinboardAPI->get_all()
+----------------------
 
 Use this method to grab all of your bookmarks, optionally filtered by up to three tags or a time interval.
 Note that Pinboard may impose rate limiting on this method.
@@ -127,7 +133,8 @@ If you would like to skip any arguments, use `null` in place of the missing argu
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->get()
+PinboardAPI->get()
+------------------
 
 Use this method to grab some of your bookmarks, optionally filtered by up to three tags.
 Please read Pinboard's [documentation](https://pinboard.in/api/#posts_get)
@@ -146,7 +153,8 @@ If you would like to skip any arguments, use `null` in place of the missing argu
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->search_by_url()
+PinboardAPI->search_by_url()
+----------------------------
 
 A shortcut to `get()`.
 Note that this method will return an array even if there is only one bookmark.
@@ -158,7 +166,8 @@ Note that this method will return an array even if there is only one bookmark.
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->search_by_tag()
+PinboardAPI->search_by_tag()
+----------------------------
 
 A shortcut to `get_all()`.
 
@@ -169,7 +178,8 @@ A shortcut to `get_all()`.
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->search_by_date()
+PinboardAPI->search_by_date()
+-----------------------------
 
 A shortcut to `get()`.
 
@@ -180,7 +190,8 @@ A shortcut to `get()`.
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->search_by_interval()
+PinboardAPI->search_by_interval()
+---------------------------------
 
 A shortcut to `get_all()`.
 
@@ -192,7 +203,8 @@ A shortcut to `get_all()`.
 **Returns :** an array of `PinboardBookmark` objects.
 
 
-### PinboardAPI->save()
+PinboardAPI->save()
+-------------------
 
 Use this method to add a new bookmark or edit an existing bookmark.
 
@@ -206,7 +218,8 @@ Use this method to add a new bookmark or edit an existing bookmark.
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
-### PinboardAPI->delete()
+PinboardAPI->delete()
+---------------------
 
 Use this method to delete a bookmark.
 
@@ -219,7 +232,8 @@ Use this method to delete a bookmark.
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
-### PinboardAPI->get_dates()
+PinboardAPI->get_dates()
+------------------------
 
 Use this method to get a list of dates on which you added bookmarks, with the number of bookmarks for each day.
 Optionally filtered by up to three tags.
@@ -233,7 +247,8 @@ Optionally filtered by up to three tags.
 **Returns :** an array of `PinboardDate` objects. (These objects behave like strings.)
 
 
-### PinboardAPI->get_suggested_tags()
+PinboardAPI->get_suggested_tags()
+---------------------------------
 
 Use this method to get tag suggestions for a bookmark or URL.
 
@@ -246,7 +261,8 @@ Use this method to get tag suggestions for a bookmark or URL.
 **Returns :** an associative array with two keys, `popular` and `recommended`, each of which contains an array of strings.
 
 
-### PinboardAPI->get_tags()
+PinboardAPI->get_tags()
+-----------------------
 
 Use this method to get a list of all your tags, with the number of bookmarks for each tag.
 
@@ -257,7 +273,8 @@ Use this method to get a list of all your tags, with the number of bookmarks for
 **Returns :** an array of `PinboardTag` objects. (These objects behave like strings.)
 
 
-### PinboardAPI->rename_tag()
+PinboardAPI->rename_tag()
+-------------------------
 
 Use this method to rename one tag to another.
 
@@ -271,7 +288,8 @@ Use this method to rename one tag to another.
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
-### PinboardAPI->delete_tag()
+PinboardAPI->delete_tag()
+-------------------------
 
 Use this method to delete a tag. Bookmarks will not be deleted.
 
@@ -284,7 +302,8 @@ Use this method to delete a tag. Bookmarks will not be deleted.
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
-### PinboardAPI->get_rss_token()
+PinboardAPI->get_rss_token()
+----------------------------
 
 Use this method to get your secret RSS token.
 
@@ -295,7 +314,8 @@ Use this method to get your secret RSS token.
 **Returns :** a string containing your RSS token.
 
 
-### PinboardAPI->get_last_status()
+PinboardAPI->get_last_status()
+------------------------------
 
 Use this method to retrieve any error message for one of the following methods: `save()`, `delete()`, `rename_tag()`, and `delete_tag()`.
 If the last operation did not fail, this method will return "done".
@@ -306,7 +326,8 @@ If no applicable operation has been performed, this method will return `null`.
 **Returns :** a string containing the last error message, or `null`.
 
 
-### PinboardAPI->dump()
+PinboardAPI->dump()
+-------------------
 
 Use this method to back up all of your bookmarks.
 The dump will be produced in an XML format that can be easily imported into Pinboard, Delicious,
@@ -320,7 +341,8 @@ Note that Pinboard may impose rate limiting on this method.
 **Returns :** a string containing the XML dump.
 
 
-### PinboardBookmark
+PinboardBookmark class
+----------------------
 
 This class is used with `save()` and several other methods that take bookmarks as an argument.
 Its use is required when calling `save()`, but in most other cases it can be substituted with just a URL.
@@ -343,7 +365,8 @@ The following properties are also public, but they will not be saved when you ca
   - **others** : the number of other Pinboard users who have bookmarked the same URL.
 
 
-### PinboardDate
+PinboardDate class
+------------------
 
 Instances of this class are returned by `get_dates()`. They contain dates in the format `YYYY-MM-DD`.
 For all intents and purposes, these objects can be used exactly like strings.
@@ -356,7 +379,8 @@ Examples:
     echo $date->count;  // prints '16'
 
 
-### PinboardTag
+PinboardTag class
+-----------------
 
 Instances of this class are returned by `get_tags()`.
 For all intents and purposes, these objects can be used exactly like strings.
@@ -373,7 +397,8 @@ Examples:
     echo $tag->count;  // prints '42'
 
 
-### Exceptions
+Exceptions and Error Handling
+-----------------------------
 
 The Pinboard API Client defines the following exceptions:
 
@@ -396,4 +421,4 @@ such as attempting to save a bookmark with an invalid URL or an empty title.
 Note that some methods will return `false` instead of throwing an exception on failure.
 This is because the author has judged that errors in those cases are not "exceptional".
 (For example, it is harmless to try to delete a bookmark that has already been deleted.)
-All of cases are all documented above.
+All such cases are clearly documented above.
