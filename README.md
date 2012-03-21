@@ -2,7 +2,7 @@
 Pinboard API Client in PHP
 ==========================
 
-This library implements a client for [Pinboard API](https://pinboard.in/api/).
+This library implements a client for the [Pinboard API](https://pinboard.in/api/).
 All of the XML juggling is abstracted away, so that you can work with native PHP arrays and objects.
 Currently, all features of API v1 are supported.
 However, this library has not been tested extensively, so caution is advised when using it on important data.
@@ -10,7 +10,8 @@ However, this library has not been tested extensively, so caution is advised whe
 This library requires PHP 5 with the cURL extension. SSL support must be enabled.
 This library also requires SimpleXML, which is enabled by default in most PHP 5 installations.
 
-This library is released under the liberal [MIT License](http://opensource.org/licenses/MIT).
+Pinboard API Client for PHP is released under the [MIT License](http://opensource.org/licenses/MIT).
+The author is not affiliated with Pinboard in any way except as a customer.
 
 
 ### Getting Started
@@ -29,7 +30,7 @@ Create a new bookmark:
     $bookmark->tags = array('awesome', 'bookmarking');
     $bookmark->save();
     
-Edit an existing bookmark:
+Find and edit an existing bookmark:
 
     $bookmarks = $pinboard->search_by_url('https://delicious.com/');
     if (count($bookmarks)) {
@@ -354,8 +355,8 @@ Arguments: none.
 Returns: a string containing the XML dump.
 
 
-PinboardBookmark class
-----------------------
+The PinboardBookmark class
+--------------------------
 
 This class is used with `save()` and several other methods that take bookmarks as an argument.
 Its use is required when calling `save()`, but in most other cases it can be substituted with just a URL.
@@ -411,6 +412,7 @@ The following example copies bookmarks from one Pinboard account to another:
     $bookmarks = $pinboard1->search_by_tag('tag');
     foreach ($bookmarks as $bookmark) {
         $bookmark->save($pinboard2);
+        sleep(3);  // Comply with Pinboard's rate limiting policy
     }
 
 Even when using multiple instances, bookmarks that were retrieved using one of the `get_*` or `search_*` methods
@@ -425,8 +427,8 @@ as shown in the following example:
     $bookmark->save();  // Automatically saved to $pinboard1
 
 
-PinboardDate class
-------------------
+The PinboardDate class
+----------------------
 
 Instances of this class are returned by `get_dates()`. They contain dates in the format `YYYY-MM-DD`.
 For all intents and purposes, these objects can be used exactly like strings.
@@ -439,8 +441,8 @@ Examples:
     echo $date->count;  // prints '16'
 
 
-PinboardTag class
------------------
+The PinboardTag class
+---------------------
 
 Instances of this class are returned by `get_tags()`.
 For all intents and purposes, these objects can be used exactly like strings.
@@ -457,26 +459,20 @@ Examples:
     echo $tag->count;  // prints '42'
 
 
-Exceptions and Error Handling
------------------------------
+Error Handling
+--------------
 
 The Pinboard API Client defines the following exceptions:
 
-  - `PinboardException` (extends `Exception`)
-  - `PinboardException_ConnectionError` (extends `PinboardException`)
-  - `PinboardException_TooManyRequests` (extends `PinboardException`)
-  - `PinboardException_InvalidResponse` (extends `PinboardException`)
-
-`PinboardException_ConnectionError` is thrown if there is a problem connecting to Pinboard's servers.
-This is most likely due to some sort of outage.
-
-`PinboardException_TooManyRequests` is thrown if the server responds with HTTP code 429, "Too Many Requests".
-This means that you should slow down and wait a few minutes before making additional calls to `get()` or `get_all()`.
-
-`PinboardException_InvalidResponse` is thrown if the server responds with any HTTP code other than 200 and 429, or if it returns invalid XML.
-
-`PinboardException` is thrown in all other error situations,
-such as attempting to save a bookmark with an invalid URL or an empty title.
+  - `PinboardException` (extends `Exception`) is thrown in all error situations not covered by the other exceptions,
+    such as attempting to save a bookmark with an invalid URL or an empty title.
+  - `PinboardException_ConnectionError` (extends `PinboardException`) is thrown if the library encounters problems
+    while connecting to Pinboard's servers. This is most likely due to some sort of outage.
+  - `PinboardException_TooManyRequests` (extends `PinboardException`) is thrown if the server responds with HTTP code 429, "Too Many Requests".
+    This means that you should slow down and wait a few minutes before making additional calls to `get()` or `get_all()`.
+    See [here](https://pinboard.in/tos/) and [here](https://pinboard.in/api/#limits) for more information on rate limiting.
+  - `PinboardException_InvalidResponse` (extends `PinboardException`) is thrown if the server responds
+    with any HTTP code other than 200 and 429, or if it returns invalid XML.
 
 Note that some methods will return `false` instead of throwing an exception on failure.
 This is because the author has judged that errors in those cases are not "exceptional".
