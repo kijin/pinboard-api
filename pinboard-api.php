@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.1
+ * Version: 0.1.1
  * 
  * Copyright (c) 2012, Kijin Sung <kijin.sung@gmail.com>
  * 
