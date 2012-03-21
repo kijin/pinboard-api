@@ -27,7 +27,7 @@ Create a new bookmark:
     $bookmark->title = 'Pinboard';
     $bookmark->description = 'An awesome bookmarking service';
     $bookmark->tags = array('awesome', 'bookmarking');
-    $pinboard->save($bookmark);
+    $bookmark->save();
     
 Edit an existing bookmark:
 
@@ -36,8 +36,12 @@ Edit an existing bookmark:
         $bookmark = $bookmark[0];
         $bookmark->description = 'Not so tasty anymore';
         $bookmark->tags[] = 'not-awesome'
-        $pinboard->save($bookmark);
+        $bookmark->save();
     }
+
+Delete a bookmark:
+
+    $bookmark->delete();
 
 Get a list of your tags:
 
@@ -68,7 +72,7 @@ PinboardAPI->__construct()
   - _optional_ **$connection_timeout** : connection timeout in seconds. Default is 10.
   - _optional_ **$request_timeout** : request timeout in seconds. Default is 30.
 
-    
+
 PinboardAPI->enable_logging()
 -----------------------------
 
@@ -82,6 +86,11 @@ This can be useful for debugging.
 The callable can be either a function name, a method name, or a closure.
 It will be passed the remote URL whenever the API Client makes a request to Pinboard.
 
+The following example will print "https://api.pinboard.in/v1/posts/update" to the console.
+
+    $pinboard = new PinboardAPI('username', 'password');
+    $pinboard->enable_logging(function($str) { echo "$str\n"; });
+    $updated_time = $pinboard->get_updated_time();
 
 PinboardAPI->get_updated_time()
 -------------------------------
@@ -217,6 +226,8 @@ Use this method to add a new bookmark or edit an existing bookmark.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
+When not using `$replace`, it may be more intuitive to use `PinboardBookmark->save()` instead. See below for more information on using this alternative syntax.
+
 
 PinboardAPI->delete()
 ---------------------
@@ -230,6 +241,8 @@ Use this method to delete a bookmark.
   - _required_ **$bookmark** : a `PinboardBookmark` object, or a URL.
 
 **Returns :** `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
+
+Note that it may be more intuitive to use `PinboardBookmark->delete()` instead. See below for more information on using this alternative syntax.
 
 
 PinboardAPI->get_dates()
@@ -363,6 +376,23 @@ The following properties are also public, but they will not be saved when you ca
   - **hash** : an MD5 hash of the URL that Pinboard uses to uniquely identify bookmarks.
   - **meta** : another hash that can be used to detect when a bookmark is changed.
   - **others** : the number of other Pinboard users who have bookmarked the same URL.
+
+The following methods are available:
+
+  - **save()** : save this bookmark.
+  - **delete()** : delete this bookmark.
+
+You can use these methods instead of `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` to save or delete individual bookmarks.
+This is also more consistent with common idioms of object-oriented programming.
+
+If only one instance of `PinboardAPI` exists in the current script (which will usually be the case),
+the API Client automatically uses it to save or delete all bookmarks, even newly created ones.
+On the other hand, if there are multiple instances using different login credentials (quite uncommon),
+`PinboardException` will be thrown because the methods won't know which instance to use.
+In that case, you must call `$PinboardAPI->save($bookmark)` and `$PinboardAPI->delete($bookmark)` instead,
+or pass the appropriate `PinboardAPI` instance to `save()` and `delete()` as an argument.
+However, even when using multiple instances, bookmarks that were retrieved using one of the `get_*` or `search_*` methods
+will remember which instance they came from, and therefore `save()` and `delete()` will work without any problem.
 
 
 PinboardDate class
