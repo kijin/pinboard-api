@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.1.1
+ * Version: 0.1.2
  * 
  * Copyright (c) 2012, Kijin Sung <kijin.sung@gmail.com>
  * 
@@ -40,6 +40,7 @@ class PinboardAPI
     protected $_instance_hash;
     protected $_user;
     protected $_pass;
+    protected $_curl_handle;
     protected $_connection_timeout;
     protected $_request_timeout;
     protected $_last_status;
@@ -61,6 +62,7 @@ class PinboardAPI
     
     public function __destruct()
     {
+        if (!is_null($this->_curl_handle)) curl_close($this->_curl_handle);
         unset(self::$_instance_hashes[$this->_instance_hash]);
     }
     
@@ -322,28 +324,35 @@ class PinboardAPI
             $func($url);
         }
         
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->_connection_timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->_request_timeout);
-        curl_setopt($ch, CURLOPT_USERAGENT, self::USER_AGENT);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-        curl_setopt($ch, CURLOPT_USERPWD, $this->_user . ':' . $this->_pass);
-        $response = curl_exec($ch);
-        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (is_null($this->_curl_handle))
+        {
+            $this->_curl_handle = curl_init();
+            curl_setopt_array($this->_curl_handle, array(
+                CURLOPT_CONNECTTIMEOUT => $this->_connection_timeout,
+                CURLOPT_TIMEOUT => $this->_request_timeout,
+                CURLOPT_USERAGENT => self::USER_AGENT,
+                CURLOPT_ENCODING => '',
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_FOLLOWLOCATION => 1,
+                CURLOPT_MAXREDIRS => 1,
+                CURLOPT_HTTPAUTH => CURLAUTH_ANY,
+                CURLOPT_USERPWD => $this->_user . ':' . $this->_pass,
+            ));
+        }
+        
+        curl_setopt($this->_curl_handle, CURLOPT_URL, $url);
+        $response = curl_exec($this->_curl_handle);
+        $status = (int)curl_getinfo($this->_curl_handle, CURLINFO_HTTP_CODE);
+        
         switch ($status)
         {
             case 200: break;
             case 429: throw new PinboardException_TooManyRequests('Too many requests');
             default:
                 if ($status > 0) throw new PinboardException_InvalidResponse('Server responded with HTTP status code ' . $status);
-                if (curl_errno($ch)) throw new PinboardException_ConnectionError(curl_error($ch));
+                if (curl_errno($this->_curl_handle)) throw new PinboardException_ConnectionError(curl_error($this->_curl_handle));
                 throw new PinboardException_ConnectionError('Unknown error');
         }
-        curl_close($ch);
         
         if ($return_xml)
         {
