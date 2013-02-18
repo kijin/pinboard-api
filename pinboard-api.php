@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.1.2
+ * Version: 0.1.3
  * 
  * Copyright (c) 2012, Kijin Sung <kijin.sung@gmail.com>
  * 
@@ -395,8 +395,8 @@ class PinboardAPI
     
     protected function _to_datetime($timestamp)
     {
-        if (!is_int($timestamp)) $timestamp = strtotime($timestamp);
-        return gmdate('Y-m-d\TH:i:s\Z', $timestamp);
+        if (!is_int($timestamp) && !ctype_digit($timestamp)) $timestamp = strtotime(trim($timestamp));
+        return gmdate('Y-m-d\\TH:i:s\\Z', $timestamp);
     }
     
     // This method builds a PinboardBookmark object from an XML element.
