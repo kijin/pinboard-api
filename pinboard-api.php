@@ -6,7 +6,7 @@
  * URL: http://github.com/kijin/pinboard-api
  * Version: 0.1.3
  * 
- * Copyright (c) 2012, Kijin Sung <kijin.sung@gmail.com>
+ * Copyright (c) 2012-2013, Kijin Sung <kijin@kijinsung.com>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

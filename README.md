@@ -5,7 +5,6 @@ Pinboard API Client in PHP
 This library implements a client for the [Pinboard API](https://pinboard.in/api/).
 All of the XML juggling is abstracted away, so that you can work with native PHP arrays and objects.
 Currently, all features of API v1 are supported.
-However, this library has not been tested extensively, so caution is advised when using it on important data.
 
 This library requires PHP 5 with the cURL extension. SSL support must be enabled.
 This library also requires SimpleXML, which is enabled by default in most PHP 5 installations.
