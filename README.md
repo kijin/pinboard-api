@@ -15,9 +15,18 @@ The author is not affiliated with Pinboard in any way except as a customer.
 
 ### Getting Started
 
-Bootstrap:
+Installation (without composer):
 
     include 'pinboard-api.php';
+
+Installation (with composer):
+
+    "require": {
+        "kijin/pinboard-api": "dev-master"
+    }
+
+Bootstrap:
+
     $pinboard = new PinboardAPI('username', 'password');
 
 Create a new bookmark:
