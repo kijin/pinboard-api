@@ -290,6 +290,14 @@ class PinboardAPI
         return (string)$xml;
     }
     
+    // Get the user's API token.
+    
+    public function get_api_token()
+    {
+        $xml = $this->_remote('user/api_token');
+        return (string)$xml;
+    }
+    
     // Get the last status code.
     
     public function get_last_status()
