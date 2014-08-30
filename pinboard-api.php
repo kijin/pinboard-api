@@ -360,7 +360,10 @@ class PinboardAPI
         switch ($status)
         {
             case 200: break;
-            case 429: throw new PinboardException_TooManyRequests('Too many requests');
+            case 401:
+                throw new PinboardException_AuthenticationFailure('Authentication failure (using ' . ($use_http_auth ? 'password' : 'token'));
+            case 429:
+                throw new PinboardException_TooManyRequests('Too many requests');
             default:
                 if ($status > 0) throw new PinboardException_InvalidResponse('Server responded with HTTP status code ' . $status);
                 if (curl_errno($this->_curl_handle)) throw new PinboardException_ConnectionError(curl_error($this->_curl_handle));
@@ -573,5 +576,6 @@ class PinboardTag
 
 class PinboardException extends Exception { }
 class PinboardException_ConnectionError extends PinboardException { }
+class PinboardException_AuthenticationFailure extends PinboardException { }
 class PinboardException_TooManyRequests extends PinboardException { }
 class PinboardException_InvalidResponse extends PinboardException { }
