@@ -282,6 +282,24 @@ class PinboardAPI
         return $this->_xml_to_status($xml);
     }
     
+    // Get the list of notes.
+    
+    public function list_notes()
+    {
+        $xml = $this->_remote('notes/list');
+        return $this->_xml_to_note($xml);
+    }
+    
+    // Get a single note.
+    
+    public function get_note($id)
+    {
+        if (!preg_match('/^[0-9a-f]{20}$/', $id)) return false;
+        $xml = $this->_remote('notes/' . $id);
+        $note = $this->_xml_to_note($xml);
+        return count($note) ? current($note) : false;
+    }
+    
     // Get the user's secret RSS token.
     
     public function get_rss_token()
@@ -466,6 +484,29 @@ class PinboardAPI
         return $ret;
     }
     
+    // This method builds a PinboardNote object from an XML element.
+    
+    protected function _xml_to_note($xml)
+    {
+        $ret = array();
+        
+        $entries = $xml->getName() === 'notes' ? $xml->note : array($xml);
+        foreach ($entries as $entry)
+        {
+            $note = new PinboardNote;
+            $note->id = (string)$entry['id'];
+            if (isset($entry->title)) $note->title = (string)$entry->title;
+            if (isset($entry->hash)) $note->hash = (string)$entry->hash;
+            if (isset($entry->created_at)) $note->created_at = (string)$entry->created_at;
+            if (isset($entry->updated_at)) $note->updated_at = (string)$entry->updated_at;
+            if (isset($entry->length)) $note->length = (string)$entry->length;
+            if (isset($entry->text)) $note->text = (string)$entry->text;
+            $ret[] = $note;
+        }
+        
+        return $ret;
+    }
+    
     // This method translates XML responses into boolean status codes.
     
     protected function _xml_to_status($xml)
@@ -578,6 +619,19 @@ class PinboardTag
     {
         return $this->tag;
     }
+}
+
+// Note class, used for handling individual notes.
+
+class PinboardNote
+{
+    public $id;
+    public $title;
+    public $hash;
+    public $created_at;
+    public $updated_at;
+    public $length;
+    public $text;
 }
 
 // Exceptions.
