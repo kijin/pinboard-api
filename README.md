@@ -27,7 +27,7 @@ Installation (with composer):
 
 Bootstrap:
 
-    $pinboard = new PinboardAPI('username', 'password');
+    $pinboard = new PinboardAPI('username', 'password_or_token');
 
 Create a new bookmark:
 
@@ -77,9 +77,22 @@ PinboardAPI->__construct()
 Arguments:
 
   - _required_ **$user** : your Pinboard username.
-  - _required_ **$pass** : your Pinboard password.
+  - _required_ **$pass** : your Pinboard password or API token.
   - _optional_ **$connection_timeout** : connection timeout in seconds. Default is 10.
   - _optional_ **$request_timeout** : request timeout in seconds. Default is 30.
+
+If you want to use your API token instead of your account password,
+you must use the full string as it appears in the "settings" page.
+This includes your username, a colon character, and 20 uppercase hexademical digits.
+
+For example:
+
+    $pinboard = new PinboardAPI('user', 'user:0123456789ABCDEFABCD');
+
+You can also pass `null` instead of your username, since the token already includes your username.
+However, using any value other than your own username or `null` will result in authentication failure.
+
+Password authentication will continue to work normally until Pinboard stops supporting it.
 
 
 PinboardAPI->enable_logging()
@@ -334,6 +347,22 @@ API Method Call: `user/secret`
 Arguments: none.
 
 Returns: a string containing your RSS token.
+
+
+PinboardAPI->get_api_token()
+----------------------------
+
+Use this method to get your API token.
+
+API Method Call: `user/api_token`
+
+Arguments: none.
+
+Returns: a string containing your API token.
+
+Note that this method only returns the hexademical part of the API token.
+In order to use the token for authentication, you must combine it with the username.
+See the documentation for `__construct()` for more information on how to use the token for authentication.
 
 
 PinboardAPI->get_last_status()
