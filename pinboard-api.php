@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.1.3
+ * Version: 0.2.0
  * 
  * Copyright (c) 2012-2013, Kijin Sung <kijin@kijinsung.com>
  * 
@@ -308,6 +308,16 @@ class PinboardAPI
     
     protected function _remote($method, $args = array(), $return_xml = true)
     {
+        if ($this->_user === null || preg_match('/^' . preg_quote($this->_user, '/') . ':[0-9A-F]{20}$/', $this->_pass))
+        {
+            $args['auth_token'] = $this->_pass;
+            $use_http_auth = false;
+        }
+        else
+        {
+            $use_http_auth = true;
+        }
+        
         if (is_array($args) && count($args))
         {
             $querystring = '?' . http_build_query($args);
@@ -335,9 +345,12 @@ class PinboardAPI
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_FOLLOWLOCATION => 1,
                 CURLOPT_MAXREDIRS => 1,
-                CURLOPT_HTTPAUTH => CURLAUTH_ANY,
-                CURLOPT_USERPWD => $this->_user . ':' . $this->_pass,
             ));
+            if ($use_http_auth)
+            {
+                curl_setopt($this->_curl_handle, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+                curl_setopt($this->_curl_handle, CURLOPT_USERPWD, $this->_user . ':' . $this->_pass);
+            }
         }
         
         curl_setopt($this->_curl_handle, CURLOPT_URL, $url);
