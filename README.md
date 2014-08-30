@@ -337,6 +337,38 @@ Arguments:
 Returns: `true` on success and `false` on failure. Call `get_last_status()` to read the error message in case of a failure.
 
 
+PinbiardAPI->list_notes()
+-------------------------
+
+Use this method to list your notes.
+
+API Method Call: `notes/list`
+
+Arguments: none.
+
+Returns: an array of `PinboardNote` objects.
+
+As of August 2014, this API call only returns metadata.
+In order to get the content of each note, please use `get_note()`.
+
+
+PinboardAPI->get_note()
+-----------------------
+
+Use this method to get the contents of a single note.
+
+API Method Call: `notes/ID`
+
+Arguments:
+
+  - _required_ **$id** : the ID of the note that you want to get.
+
+Returns: a `PinboardNote` object, or `false` if the note does not exist.
+
+As of August 2014, this API call returns the title, content, and minimal metadata.
+In order to get the rest of the metadata, please use `list_notes()`.
+
+
 PinboardAPI->get_rss_token()
 ----------------------------
 
@@ -496,6 +528,27 @@ Examples:
     echo $tag->count;  // prints '42'
 
 
+The PinboardNote class
+---------------------
+
+Instances of this class are returned by `list_notes()` and `get_note()`.
+Currently, it is not possible to save a note to Pinboard through the API.
+
+Because different API calls return a different subset of content and metadata, not all of the following properties may be populated.
+The only property that is guaranteed to be populated is `id`. Unpopulated properties will have the value of `null`.
+See documentation for the methods above for more details.
+
+The following properties are available:
+
+  - **id**
+  - **title**
+  - **hash**
+  - **created_at**
+  - **updated_at**
+  - **length**
+  - **text**
+
+
 Error Handling
 --------------
 
@@ -505,6 +558,9 @@ The Pinboard API Client defines the following exceptions:
     such as attempting to save a bookmark with an invalid URL or an empty title.
   - `PinboardException_ConnectionError` (extends `PinboardException`) is thrown if the library encounters problems
     while connecting to Pinboard's servers. This is most likely due to some sort of outage.
+  - `PinboardException_AuthenticationFailure` (extends `PinboardException`) is thrown in case of authentication failure.
+    This may be because the username and password/token do not match, or because you supplied the API token in the wrong format.
+    (The API token must include the username, not just the hexademical portion.)
   - `PinboardException_TooManyRequests` (extends `PinboardException`) is thrown if the server responds with HTTP code 429, "Too Many Requests".
     This means that you should slow down and wait a few minutes before making additional calls to `get()` or `get_all()`.
     See [here](https://pinboard.in/tos/) and [here](https://pinboard.in/api/#limits) for more information on rate limiting.
