@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.2.0
+ * Version: 0.2.1
  * 
  * Copyright (c) 2012-2013, Kijin Sung <kijin@kijinsung.com>
  * 
@@ -32,9 +32,10 @@ class PinboardAPI
     // Settings are stored here.
     
     const API_BASE_URL = 'https://api.pinboard.in/v1/';
+    const API_CLIENT_VERSION = "0.2.1";
     const ALLOWED_URL_SCHEMES_REGEX = '/^(?:https?|javascript|mailto|ftp|file):/i';
     const RECENT_COUNT_MAX = 100;
-    const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client for PHP; http://github.com/kijin/pinboard-api)';
+    const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client %s for PHP; http://github.com/kijin/pinboard-api)';
     
     public static $_instance_hashes = array();
     protected $_instance_hash;
@@ -366,7 +367,7 @@ class PinboardAPI
             curl_setopt_array($this->_curl_handle, array(
                 CURLOPT_CONNECTTIMEOUT => $this->_connection_timeout,
                 CURLOPT_TIMEOUT => $this->_request_timeout,
-                CURLOPT_USERAGENT => self::USER_AGENT,
+                CURLOPT_USERAGENT => sprintf(self::USER_AGENT, self::API_CLIENT_VERSION),
                 CURLOPT_ENCODING => '',
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_FOLLOWLOCATION => 1,
