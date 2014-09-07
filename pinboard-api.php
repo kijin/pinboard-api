@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.2.1
+ * Version: 0.2.2
  * 
  * Copyright (c) 2012-2013, Kijin Sung <kijin@kijinsung.com>
  * 
@@ -32,7 +32,7 @@ class PinboardAPI
     // Settings are stored here.
     
     const API_BASE_URL = 'https://api.pinboard.in/v1/';
-    const API_CLIENT_VERSION = "0.2.1";
+    const API_CLIENT_VERSION = '0.2.2';
     const ALLOWED_URL_SCHEMES_REGEX = '/^(?:https?|javascript|mailto|ftp|file):/i';
     const RECENT_COUNT_MAX = 100;
     const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client %s for PHP; http://github.com/kijin/pinboard-api)';
@@ -125,21 +125,7 @@ class PinboardAPI
         $args = array();
         if (!is_null($url)) $args['url'] = $url;
         if (!is_null($tags)) $args['tag'] = $this->_normalize_tags($tags);
-        if (!is_null($date))
-        {
-            if (is_int($date))
-            {
-                $args['dt'] = gmdate('Y-m-d', $date);
-            }
-            elseif (preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $date))
-            {
-                $args['dt'] = $date;
-            }
-            else
-            {
-                $args['dt'] = gmdate('Y-m-d', strtotime($date));
-            }
-        }
+        if (!is_null($date)) $args['dt'] = substr($this->_to_datetime($date), 0, 10);
         
         $xml = $this->_remote('posts/get', $args);
         return $this->_xml_to_bookmark($xml);
