@@ -82,8 +82,8 @@ class PinboardAPI
     
     public function get_updated_time()
     {
-        $xml = $this->_remote('posts/update');
-        $timestamp = (string)$xml['time'];
+        $json = $this->_remote('posts/update');
+        $timestamp = (string)$json['time'];
         return strtotime($timestamp);
     }
     
@@ -99,8 +99,8 @@ class PinboardAPI
         $args['count'] = (int)$count;
         if (!is_null($tags)) $args['tag'] = $this->_normalize_tags($tags);
         
-        $xml = $this->_remote('posts/recent', $args);
-        return $this->_xml_to_bookmark($xml);
+        $json = $this->_remote('posts/recent', $args);
+        return $this->_json_to_bookmark($json);
     }
     
     // Get all bookmarks.
@@ -114,8 +114,8 @@ class PinboardAPI
         if (!is_null($from)) $args['fromdt'] = $this->_to_datetime($from);
         if (!is_null($to)) $args['todt'] = $this->_to_datetime($to);
         
-        $xml = $this->_remote('posts/all', $args);
-        return $this->_xml_to_bookmark($xml);
+        $json = $this->_remote('posts/all', $args);
+        return $this->_json_to_bookmark($json);
     }
     
     // Get some bookmarks.
@@ -127,8 +127,8 @@ class PinboardAPI
         if (!is_null($tags)) $args['tag'] = $this->_normalize_tags($tags);
         if (!is_null($date)) $args['dt'] = substr($this->_to_datetime($date), 0, 10);
         
-        $xml = $this->_remote('posts/get', $args);
-        return $this->_xml_to_bookmark($xml);
+        $json = $this->_remote('posts/get', $args);
+        return $this->_json_to_bookmark($json);
     }
     
     // Some shortcuts to the above.
@@ -185,8 +185,8 @@ class PinboardAPI
         if (!is_null($bookmark->is_public)) $args['shared'] = $bookmark->is_public ? 'yes' : 'no';
         if (!is_null($bookmark->is_unread)) $args['toread'] = $bookmark->is_unread ? 'yes' : 'no';
         
-        $xml = $this->_remote('posts/add', $args);
-        return $this->_xml_to_status($xml);
+        $json = $this->_remote('posts/add', $args);
+        return $this->_json_to_status($json);
     }
     
     // Delete a bookmark.
@@ -198,8 +198,8 @@ class PinboardAPI
             $bookmark = $bookmark->url;
         }
         
-        $xml = $this->_remote('posts/delete', array('url' => $bookmark));
-        return $this->_xml_to_status($xml);
+        $json = $this->_remote('posts/delete', array('url' => $bookmark));
+        return $this->_json_to_status($json);
     }
     
     // Get dates.
@@ -209,9 +209,9 @@ class PinboardAPI
         $args = array();
         if (!is_null($tags)) $args['tag'] = $this->_normalize_tags($tags);
         
-        $xml = $this->_remote('posts/dates', $args);
+        $json = $this->_remote('posts/dates', $args);
         $ret = array();
-        foreach ($xml->date as $date)
+        foreach ($json->date as $date)
         {
             $ret[] = new PinboardDate((string)$date['date'], (int)$date['count']);
         }
@@ -227,13 +227,13 @@ class PinboardAPI
             $bookmark = $bookmark->url;
         }
         
-        $xml = $this->_remote('posts/suggest', array('url' => $bookmark));
+        $json = $this->_remote('posts/suggest', array('url' => $bookmark));
         $ret = array('popular' => array(), 'recommended' => array());
-        foreach ($xml->popular as $popular)
+        foreach ($json->popular as $popular)
         {
             $ret['popular'][] = (string)$popular;
         }
-        foreach ($xml->recommended as $recommended)
+        foreach ($json->recommended as $recommended)
         {
             $ret['recommended'][] = (string)$recommended;
         }
@@ -244,11 +244,11 @@ class PinboardAPI
     
     public function get_tags()
     {
-        $xml = $this->_remote('tags/get');
+        $json = $this->_remote('tags/get');
         $ret = array();
-        foreach ($xml->tag as $tag)
+        foreach ($json as $tag => $count)
         {
-            $ret[] = new PinboardTag((string)$tag['tag'], (int)$tag['count']);
+            $ret[] = new PinboardTag((string)$tag, (int)$count);
         }
         return $ret;
     }
@@ -257,24 +257,24 @@ class PinboardAPI
     
     public function rename_tag($old, $new)
     {
-        $xml = $this->_remote('tags/rename', array('old' => (string)$old, 'new' => (string)$new));
-        return $this->_xml_to_status($xml);
+        $json = $this->_remote('tags/rename', array('old' => (string)$old, 'new' => (string)$new));
+        return $this->_json_to_status($json);
     }
     
     // Delete a tag.
     
     public function delete_tag($tag)
     {
-        $xml = $this->_remote('tags/delete', array('tag' => (string)$tag));
-        return $this->_xml_to_status($xml);
+        $json = $this->_remote('tags/delete', array('tag' => (string)$tag));
+        return $this->_json_to_status($json);
     }
     
     // Get the list of notes.
     
     public function list_notes()
     {
-        $xml = $this->_remote('notes/list');
-        return $this->_xml_to_note($xml);
+        $json = $this->_remote('notes/list');
+        return $this->_json_to_note($json);
     }
     
     // Get a single note.
@@ -282,8 +282,8 @@ class PinboardAPI
     public function get_note($id)
     {
         if (!preg_match('/^[0-9a-f]{20}$/', $id)) return false;
-        $xml = $this->_remote('notes/' . $id);
-        $note = $this->_xml_to_note($xml);
+        $json = $this->_remote('notes/' . $id);
+        $note = $this->_json_to_note($json);
         return count($note) ? current($note) : false;
     }
     
@@ -291,16 +291,16 @@ class PinboardAPI
     
     public function get_rss_token()
     {
-        $xml = $this->_remote('user/secret');
-        return (string)$xml;
+        $json = $this->_remote('user/secret');
+        return (string)$json;
     }
     
     // Get the user's API token.
     
     public function get_api_token()
     {
-        $xml = $this->_remote('user/api_token');
-        return (string)$xml;
+        $json = $this->_remote('user/api_token');
+        return (string)$json;
     }
     
     // Get the last status code.
@@ -319,7 +319,7 @@ class PinboardAPI
     
     // This method handles all remote method calls.
     
-    protected function _remote($method, $args = array(), $return_xml = true)
+    protected function _remote($method, $args = array(), $return_json = true)
     {
         if ($this->_user === null || preg_match('/^' . preg_quote($this->_user, '/') . ':[0-9A-F]{20}$/', $this->_pass))
         {
@@ -330,6 +330,8 @@ class PinboardAPI
         {
             $use_http_auth = true;
         }
+        
+        $args['format'] = 'json';
         
         if (is_array($args) && count($args))
         {
@@ -383,17 +385,17 @@ class PinboardAPI
                 throw new PinboardException_ConnectionError('Unknown error');
         }
         
-        if ($return_xml)
+        if ($return_json)
         {
             try
             {
-                $xml = new SimpleXMLElement($response);
+                $json = json_decode($response);
             }
             catch (Exception $e)
             {
                 throw new PinboardException_InvalidResponse($e->getMessage());
             }
-            return $xml;
+            return $json;
         }
         else
         {
@@ -430,35 +432,35 @@ class PinboardAPI
     
     // This method builds a PinboardBookmark object from an XML element.
     
-    protected function _xml_to_bookmark($xml)
+    protected function _json_to_bookmark($json)
     {
         $ret = array();
         
-        foreach ($xml->post as $entry)
+        foreach ($json as $entry)
         {
             $bookmark = new PinboardBookmark;
             $bookmark->_api_instance_hash = $this->_instance_hash;
-            $bookmark->url = (string)$entry['href'];
-            $bookmark->title = (string)$entry['description'];
-            if (isset($entry['extended'])) $bookmark->description = (string)$entry['extended'];
-            if (isset($entry['time'])) $bookmark->timestamp = strtotime($entry['time']);
-            if (isset($entry['tag'])) $bookmark->tags = explode(' ', (string)$entry['tag']);
-            if (isset($entry['hash'])) $bookmark->hash = (string)$entry['hash'];
-            if (isset($entry['meta'])) $bookmark->meta = (string)$entry['meta'];
-            if (isset($entry['others'])) $bookmark->others = (int)(string)$entry['others'];
+            $bookmark->url = (string)$entry->href;
+            $bookmark->title = (string)$entry->description;
+            if (isset($entry->extended)) $bookmark->description = (string)$entry->extended;
+            if (isset($entry->time)) $bookmark->timestamp = strtotime($entry->time);
+            if (isset($entry->tag)) $bookmark->tags = explode(' ', (string)$entry->tag);
+            if (isset($entry->hash)) $bookmark->hash = (string)$entry->hash;
+            if (isset($entry->meta)) $bookmark->meta = (string)$entry->meta;
+            if (isset($entry->others)) $bookmark->others = (int)(string)$entry->others;
             
-            if (isset($entry['shared']))
+            if (isset($entry->shared))
             {
-                $bookmark->is_public = ((string)$entry['shared'] === 'yes');
+                $bookmark->is_public = ((string)$entry->shared === 'yes');
             }
             else
             {
                 $bookmark->is_public = true;
             }
             
-            if (isset($entry['toread']))
+            if (isset($entry->toread))
             {
-                $bookmark->is_unread = ((string)$entry['toread'] === 'yes');
+                $bookmark->is_unread = ((string)$entry->toread === 'yes');
             }
             else
             {
@@ -473,11 +475,11 @@ class PinboardAPI
     
     // This method builds a PinboardNote object from an XML element.
     
-    protected function _xml_to_note($xml)
+    protected function _json_to_note($json)
     {
         $ret = array();
         
-        $entries = $xml->getName() === 'notes' ? $xml->note : array($xml);
+        $entries = $json->getName() === 'notes' ? $json->note : array($json);
         foreach ($entries as $entry)
         {
             $note = new PinboardNote;
@@ -496,9 +498,9 @@ class PinboardAPI
     
     // This method translates XML responses into boolean status codes.
     
-    protected function _xml_to_status($xml)
+    protected function _json_to_status($json)
     {
-        $status = isset($xml['code']) ? (string)$xml['code'] : (string)$xml;
+        $status = isset($json['code']) ? (string)$json['code'] : (string)$json;
         $this->_last_status = $status;
         return (bool)($status === 'done');
     }
