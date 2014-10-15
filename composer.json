@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.0.0",
         "ext-curl": "*",
-        "ext-simplexml": "*"
+        "ext-json": "*"
     },
     "autoload": {
         "files": ["pinboard-api.php"]
