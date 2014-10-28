@@ -454,12 +454,14 @@ class PinboardAPI
     protected function _json_to_note($json)
     {
         $ret = array();
+        if (isset($json->notes)) $json = $json->notes;
+        if (is_object($json)) $json = array($json);
         
-        $entries = $json->getName() === 'notes' ? $json->note : array($json);
-        foreach ($entries as $entry)
+        foreach ($json as $entry)
         {
+            if (!isset($entry->id)) continue;
             $note = new PinboardNote;
-            $note->id = (string)$entry['id'];
+            $note->id = (string)$entry->id;
             if (isset($entry->title)) $note->title = (string)$entry->title;
             if (isset($entry->hash)) $note->hash = (string)$entry->hash;
             if (isset($entry->created_at)) $note->created_at = (string)$entry->created_at;
@@ -476,7 +478,9 @@ class PinboardAPI
     
     protected function _json_to_status($json)
     {
-        $status = isset($json['code']) ? (string)$json['code'] : (string)$json;
+        $status = '';
+        if (isset($json->result_code)) $status = strval($json->result_code);
+        if (!$status && isset($json->result)) $status = strval($json->result);
         $this->_last_status = $status;
         return (bool)($status === 'done');
     }
