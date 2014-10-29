@@ -9,8 +9,12 @@
         {
             "name": "Kijin Sung",
             "email": "kijin@kijinsung.com",
-            "homepage": "http://www.kijinsung.com/",
             "role": "Developer"
+        },
+        {
+            "name": "Erin Dalzell",
+            "email": "erin@thedalzells.org",
+            "role": "Contributor"
         }
     ],
     "require": {

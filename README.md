@@ -10,7 +10,7 @@ This library requires PHP 5 with the cURL extension. SSL support must be enabled
 This library also requires SimpleXML, which is enabled by default in most PHP 5 installations.
 
 This library is released under the [MIT License](http://opensource.org/licenses/MIT).
-The author is not affiliated with Pinboard in any way except as a customer.
+The author and contributor(s) are not affiliated with Pinboard in any way except as customers.
 
 
 ### Getting Started

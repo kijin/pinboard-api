@@ -7,6 +7,7 @@
  * Version: 0.3.0
  * 
  * Copyright (c) 2012-2014, Kijin Sung <kijin@kijinsung.com>
+ * Copyright (c) 2014, Erin Dalzell <erin@thedalzells.org>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
