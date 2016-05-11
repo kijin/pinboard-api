@@ -4,9 +4,9 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.3.0
+ * Version: 0.3.1
  * 
- * Copyright (c) 2012-2014, Kijin Sung <kijin@kijinsung.com>
+ * Copyright (c) 2012-2016, Kijin Sung <kijin@kijinsung.com>
  * Copyright (c) 2014, Erin Dalzell <erin@thedalzells.org>
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -276,7 +276,7 @@ class PinboardAPI
     
     public function get_note($id)
     {
-        if (!preg_match('/^[0-9a-f]{20}$/', $id)) return false;
+        if (!preg_match('/^[0-9a-f]{20}$/i', $id)) return false;
         $json = $this->_remote('notes/' . $id);
         $note = $this->_json_to_note($json);
         return count($note) ? current($note) : false;
@@ -316,7 +316,7 @@ class PinboardAPI
     
     protected function _remote($method, $args = array(), $use_json = true)
     {
-        if ($this->_user === null || preg_match('/^' . preg_quote($this->_user, '/') . ':[0-9A-F]{20}$/', $this->_pass))
+        if ($this->_user === null || preg_match('/^' . preg_quote($this->_user, '/') . ':[0-9A-F]{20}$/i', $this->_pass))
         {
             $args['auth_token'] = $this->_pass;
             $use_http_auth = false;
