@@ -386,7 +386,7 @@ class PinboardAPI
         if ($use_json)
         {
             $json = @json_decode($response);
-            if ($json === false) throw new PinboardException_InvalidResponse('Invalid JSON response');
+            if ($json === false || $json === null) throw new PinboardException_InvalidResponse('Invalid JSON response');
             return $json;
         }
         else
@@ -427,7 +427,14 @@ class PinboardAPI
     protected function _json_to_bookmark($json)
     {
         $ret = array();
-        if (isset($json->posts)) $json = $json->posts;
+        if (is_object($json) && isset($json->posts))
+        {
+            $json = $json->posts;
+        }
+        if (!is_array($json))
+        {
+            return array();
+        }
         
         foreach ($json as $entry)
         {
