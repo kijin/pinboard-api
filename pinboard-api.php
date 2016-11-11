@@ -4,7 +4,7 @@
  * Pinboard API Client in PHP
  * 
  * URL: http://github.com/kijin/pinboard-api
- * Version: 0.3.1
+ * Version: 0.3.2
  * 
  * Copyright (c) 2012-2016, Kijin Sung <kijin@kijinsung.com>
  * Copyright (c) 2014, Erin Dalzell <erin@thedalzells.org>
@@ -33,7 +33,7 @@ class PinboardAPI
     // Settings are stored here.
     
     const API_BASE_URL = 'https://api.pinboard.in/v1/';
-    const API_CLIENT_VERSION = '0.3.0';
+    const API_CLIENT_VERSION = '0.3.2';
     const ALLOWED_URL_SCHEMES_REGEX = '/^(?:https?|javascript|mailto|ftp|file):/i';
     const RECENT_COUNT_MAX = 100;
     const USER_AGENT = 'Mozilla/5.0 (Pinboard API Client %s for PHP; http://github.com/kijin/pinboard-api)';
